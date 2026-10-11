@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Security Hunter AI</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <aside class="sidebar">
+        <div class="brand">
+          <div class="logo">S</div>
+          <div>
+            <h1>Security Hunter</h1>
+            <span>AI Assistant</span>
+          </div>
+        </div>
+
+        <nav class="nav">
+          <button class="nav-btn active">Chat</button>
+          <button class="nav-btn">Imagem</button>
+          <button class="nav-btn">Links</button>
+        </nav>
+
+        <div class="mini-panel">
+          <h2>Status</h2>
+          <div class="status-row"><span>Modo</span><strong>Online</strong></div>
+          <div class="status-row"><span>IA</span><strong>Local</strong></div>
+          <div class="status-row"><span>Uso</span><strong>Rápido</strong></div>
+        </div>
+      </aside>
+
+      <main class="main-panel">
+        <header class="topbar">
+          <div>
+            <p class="eyebrow">Assistente</p>
+            <h2>Security Hunter</h2>
+          </div>
+          <button id="newChatBtn">Novo chat</button>
+        </header>
+
+        <section id="chatBox" class="chat-box"></section>
+
+        <div class="composer">
+          <input id="userInput" type="text" placeholder="Digite sua pergunta..." />
+          <button id="sendBtn">Enviar</button>
+        </div>
+
+        <div class="extra-tools">
+          <div class="tool-card">
+            <label for="imageUrl">URL da imagem</label>
+            <input id="imageUrl" type="text" placeholder="https://..." />
+            <button id="analyzeImageBtn">Analisar imagem</button>
+          </div>
+
+          <div class="tool-card">
+            <label for="siteUrl">Link público</label>
+            <input id="siteUrl" type="text" placeholder="https://example.com" />
+            <button id="analyzeSiteBtn">Verificar link</button>
+          </div>
+        </div>
+      </main>
+    </div>
+
+    <script src="app.js"></script>
+  </body>
+</html>
