@@ -1,68 +1,312 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Security Hunter AI</title>
-    <link rel="stylesheet" href="style.css" />
-  </head>
-  <body>
-    <div class="app-shell">
-      <aside class="sidebar">
-        <div class="brand">
-          <div class="logo">S</div>
-          <div>
-            <h1>Security Hunter</h1>
-            <span>AI Assistant</span>
-          </div>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Security Hunter AI</title>
+  <style>
+    * { box-sizing: border-box; }
+    :root {
+      --bg: #070b12;
+      --line: rgba(255,255,255,0.09);
+      --text: #edf4ff;
+      --muted: #9fb5d1;
+      --accent: #5ad0ff;
+      --accent-2: #7ef0c7;
+    }
+    html, body {
+      margin: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(180deg, #060912, #0b1220);
+      color: var(--text);
+      font-family: Arial, Helvetica, sans-serif;
+    }
+    body {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      padding: 20px;
+    }
+    .app-shell {
+      width: min(1200px, 100%);
+      height: min(90vh, 820px);
+      background: rgba(10, 16, 24, 0.9);
+      border: 1px solid var(--line);
+      border-radius: 22px;
+      overflow: hidden;
+      display: grid;
+      grid-template-columns: 280px 1fr;
+      box-shadow: 0 30px 80px rgba(0,0,0,0.45);
+    }
+    .sidebar {
+      background: linear-gradient(180deg, #0b1220, #101a2b);
+      border-right: 1px solid var(--line);
+      padding: 22px 18px;
+    }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 26px;
+    }
+    .logo {
+      width: 48px;
+      height: 48px;
+      display: grid;
+      place-items: center;
+      border-radius: 14px;
+      background: linear-gradient(135deg, var(--accent), var(--accent-2));
+      color: #051013;
+      font-weight: 900;
+      font-size: 24px;
+    }
+    .brand h1 { margin: 0; font-size: 1.2rem; }
+    .brand span { color: var(--muted); font-size: 0.8rem; }
+    .nav { display: flex; flex-direction: column; gap: 8px; }
+    .nav-btn {
+      background: rgba(255,255,255,0.02);
+      border: 1px solid var(--line);
+      color: var(--text);
+      border-radius: 12px;
+      padding: 12px 14px;
+      text-align: left;
+      font-weight: 700;
+      cursor: pointer;
+    }
+    .nav-btn.active {
+      background: linear-gradient(90deg, rgba(90, 208, 255, 0.16), rgba(126, 240, 199, 0.08));
+      border-color: rgba(90, 208, 255, 0.45);
+    }
+    .mini-panel {
+      margin-top: 30px;
+      padding: 16px 14px;
+      border-radius: 16px;
+      background: rgba(255,255,255,0.02);
+      border: 1px solid var(--line);
+    }
+    .mini-panel h2 { margin: 0 0 14px; font-size: 1rem; }
+    .status-row {
+      display: flex;
+      justify-content: space-between;
+      margin: 10px 0;
+      color: var(--muted);
+    }
+    .status-row strong { color: var(--text); }
+    .main-panel {
+      display: flex;
+      flex-direction: column;
+      background: linear-gradient(180deg, rgba(15,22,34,0.9), rgba(11,17,25,1));
+    }
+    .topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 20px 24px;
+      border-bottom: 1px solid var(--line);
+    }
+    .topbar h2 { margin: 4px 0 0; }
+    .eyebrow {
+      margin: 0;
+      color: var(--muted);
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      font-size: 0.72rem;
+    }
+    #newChatBtn, #sendBtn, #analyzeImageBtn, #analyzeSiteBtn {
+      border: none;
+      border-radius: 12px;
+      color: #041318;
+      background: linear-gradient(135deg, var(--accent), var(--accent-2));
+      font-weight: 800;
+      cursor: pointer;
+    }
+    #newChatBtn { padding: 10px 16px; }
+    .chat-box {
+      flex: 1;
+      overflow-y: auto;
+      padding: 18px 22px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+    .message {
+      max-width: 76%;
+      padding: 12px 14px;
+      border-radius: 16px;
+      line-height: 1.5;
+      white-space: pre-wrap;
+    }
+    .message.user {
+      margin-left: auto;
+      background: linear-gradient(135deg, rgba(90,208,255,0.18), rgba(126,240,199,0.1));
+      border: 1px solid rgba(90,208,255,0.26);
+    }
+    .message.bot {
+      background: rgba(255,255,255,0.03);
+      border: 1px solid var(--line);
+    }
+    .composer {
+      display: flex;
+      gap: 12px;
+      padding: 18px 22px 22px;
+      border-top: 1px solid var(--line);
+    }
+    #userInput, #imageUrl, #siteUrl {
+      flex: 1;
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,0.02);
+      color: var(--text);
+      border-radius: 12px;
+      padding: 14px 16px;
+      font-size: 1rem;
+    }
+    #sendBtn { padding: 0 22px; }
+    .extra-tools {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 16px;
+      padding: 0 22px 22px;
+    }
+    .tool-card {
+      background: rgba(255,255,255,0.02);
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .tool-card label {
+      color: var(--muted);
+      font-size: 0.8rem;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+    #analyzeImageBtn, #analyzeSiteBtn { padding: 12px 14px; }
+    @media (max-width: 720px) {
+      .app-shell {
+        grid-template-columns: 1fr;
+        height: auto;
+        min-height: 100vh;
+      }
+      .sidebar { border-right: none; border-bottom: 1px solid var(--line); }
+      .extra-tools { grid-template-columns: 1fr; }
+      .message { max-width: 88%; }
+    }
+  </style>
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="logo">S</div>
+        <div>
+          <h1>Security Hunter</h1>
+          <span>AI Assistant</span>
         </div>
-
-        <nav class="nav">
-          <button class="nav-btn active">Chat</button>
-          <button class="nav-btn">Imagem</button>
-          <button class="nav-btn">Links</button>
-        </nav>
-
-        <div class="mini-panel">
-          <h2>Status</h2>
-          <div class="status-row"><span>Modo</span><strong>Online</strong></div>
-          <div class="status-row"><span>IA</span><strong>Local</strong></div>
-          <div class="status-row"><span>Uso</span><strong>Rápido</strong></div>
+      </div>
+      <nav class="nav">
+        <button class="nav-btn active">Chat</button>
+        <button class="nav-btn">Imagem</button>
+        <button class="nav-btn">Links</button>
+      </nav>
+      <div class="mini-panel">
+        <h2>Status</h2>
+        <div class="status-row"><span>Modo</span><strong>Online</strong></div>
+        <div class="status-row"><span>IA</span><strong>Local</strong></div>
+        <div class="status-row"><span>Uso</span><strong>Rápido</strong></div>
+      </div>
+    </aside>
+    <main class="main-panel">
+      <header class="topbar">
+        <div>
+          <p class="eyebrow">Assistente</p>
+          <h2>Security Hunter</h2>
         </div>
-      </aside>
-
-      <main class="main-panel">
-        <header class="topbar">
-          <div>
-            <p class="eyebrow">Assistente</p>
-            <h2>Security Hunter</h2>
-          </div>
-          <button id="newChatBtn">Novo chat</button>
-        </header>
-
-        <section id="chatBox" class="chat-box"></section>
-
-        <div class="composer">
-          <input id="userInput" type="text" placeholder="Digite sua pergunta..." />
-          <button id="sendBtn">Enviar</button>
+        <button id="newChatBtn">Novo chat</button>
+      </header>
+      <section id="chatBox" class="chat-box"></section>
+      <div class="composer">
+        <input id="userInput" type="text" placeholder="Digite sua pergunta..." />
+        <button id="sendBtn">Enviar</button>
+      </div>
+      <div class="extra-tools">
+        <div class="tool-card">
+          <label for="imageUrl">URL da imagem</label>
+          <input id="imageUrl" type="text" placeholder="https://..." />
+          <button id="analyzeImageBtn">Analisar imagem</button>
         </div>
-
-        <div class="extra-tools">
-          <div class="tool-card">
-            <label for="imageUrl">URL da imagem</label>
-            <input id="imageUrl" type="text" placeholder="https://..." />
-            <button id="analyzeImageBtn">Analisar imagem</button>
-          </div>
-
-          <div class="tool-card">
-            <label for="siteUrl">Link público</label>
-            <input id="siteUrl" type="text" placeholder="https://example.com" />
-            <button id="analyzeSiteBtn">Verificar link</button>
-          </div>
+        <div class="tool-card">
+          <label for="siteUrl">Link público</label>
+          <input id="siteUrl" type="text" placeholder="https://example.com" />
+          <button id="analyzeSiteBtn">Verificar link</button>
         </div>
-      </main>
-    </div>
+      </div>
+    </main>
+  </div>
 
-    <script src="app.js"></script>
-  </body>
+  <script>
+    const chatBox = document.getElementById('chatBox');
+    const userInput = document.getElementById('userInput');
+    const sendBtn = document.getElementById('sendBtn');
+    const newChatBtn = document.getElementById('newChatBtn');
+    const imageUrlInput = document.getElementById('imageUrl');
+    const siteUrlInput = document.getElementById('siteUrl');
+    const analyzeImageBtn = document.getElementById('analyzeImageBtn');
+    const analyzeSiteBtn = document.getElementById('analyzeSiteBtn');
+
+    function addMessage(text, sender = 'bot') {
+      const el = document.createElement('div');
+      el.className = `message ${sender}`;
+      el.textContent = text;
+      chatBox.appendChild(el);
+      chatBox.scrollTop = chatBox.scrollHeight;
+    }
+
+    function defaultReply(question) {
+      const q = question.trim().toLowerCase();
+      if (!q) return 'Digite uma pergunta válida.';
+      if (q.includes('olá') || q.includes('oi')) return 'Olá! Eu sou o Security Hunter. Como posso ajudar?';
+      if (q.includes('nome')) return 'Meu nome é Security Hunter AI.';
+      if (q.includes('segurança')) return 'Posso ajudar com segurança digital, boas práticas e análise de links e imagens.';
+      if (q.includes('imagem')) return 'Você pode colar uma URL de imagem e farei uma análise simples.';
+      if (q.includes('link')) return 'Posso validar links públicos em formato http/https.';
+      return 'Pergunta recebida. Posso ajudar com segurança, links, imagens e respostas gerais.';
+    }
+
+    function handleSend() {
+      const question = userInput.value.trim();
+      if (!question) return;
+      addMessage(question, 'user');
+      userInput.value = '';
+      const response = defaultReply(question);
+      setTimeout(() => addMessage(response, 'bot'), 200);
+    }
+
+    sendBtn.addEventListener('click', handleSend);
+    userInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') handleSend(); });
+    newChatBtn.addEventListener('click', () => {
+      chatBox.innerHTML = '';
+      addMessage('Novo chat iniciado. Como posso ajudar?', 'bot');
+    });
+    analyzeImageBtn.addEventListener('click', () => {
+      const value = imageUrlInput.value.trim();
+      if (!value) { addMessage('Informe uma URL de imagem.', 'bot'); return; }
+      const isValid = /^https?:\/\//i.test(value);
+      const result = isValid ? 'URL de imagem válida. Imagem pública detectada.' : 'URL inválida. Use http:// ou https://.';
+      addMessage(result, 'bot');
+    });
+    analyzeSiteBtn.addEventListener('click', () => {
+      const value = siteUrlInput.value.trim();
+      if (!value) { addMessage('Informe um link público.', 'bot'); return; }
+      const url = new URL(value);
+      const result = `Link verificado: ${url.hostname}\nProtocolo: ${url.protocol}\nStatus: URL válida no formato do navegador.`;
+      addMessage(result, 'bot');
+    });
+
+    addMessage('Olá! Eu sou o Security Hunter. Como posso ajudar hoje?', 'bot');
+  </script>
+</body>
 </html>
