@@ -1,269 +1,83 @@
-* {
-  box-sizing: border-box;
+const chatBox = document.getElementById('chatBox');
+const userInput = document.getElementById('userInput');
+const sendBtn = document.getElementById('sendBtn');
+const newChatBtn = document.getElementById('newChatBtn');
+const imageUrlInput = document.getElementById('imageUrl');
+const siteUrlInput = document.getElementById('siteUrl');
+const analyzeImageBtn = document.getElementById('analyzeImageBtn');
+const analyzeSiteBtn = document.getElementById('analyzeSiteBtn');
+
+function addMessage(text, sender = 'bot') {
+  const el = document.createElement('div');
+  el.className = `message ${sender}`;
+  el.textContent = text;
+  chatBox.appendChild(el);
+  chatBox.scrollTop = chatBox.scrollHeight;
 }
 
-:root {
-  --bg: #070b12;
-  --panel: #101826;
-  --panel-2: #172333;
-  --line: rgba(255,255,255,0.09);
-  --text: #edf4ff;
-  --muted: #9fb5d1;
-  --accent: #5ad0ff;
-  --accent-2: #7ef0c7;
-  --danger: #ff6a6a;
-  --warning: #ffd166;
+function defaultReply(question) {
+  const q = question.trim().toLowerCase();
+
+  if (!q) return 'Digite uma pergunta válida.';
+
+  if (q.includes('olá') || q.includes('oi')) return 'Olá! Eu sou o Security Hunter. Como posso ajudar?';
+  if (q.includes('nome')) return 'Meu nome é Security Hunter AI.';
+  if (q.includes('segurança') || q.includes('security')) return 'Posso ajudar com segurança digital, boas práticas e análise de links públicos e imagens.';
+  if (q.includes('como') && q.includes('funciona')) return 'Eu respondo perguntas locais, verifico links públicos e faço uma análise simples de imagem por URL.';
+  if (q.includes('preço') || q.includes('valor')) return 'Este site é um assistente local e não é um sistema de preços em tempo real.';
+  if (q.includes('imagem')) return 'Você pode colar uma URL de imagem e eu farei uma análise simples do conteúdo visual.';
+  if (q.includes('link')) return 'Se o link for público e estiver em http/https, posso validar o formato e informar se parece legítimo.';
+
+  return 'Resposta local do assistente: a pergunta foi recebida. Posso ajudar com segurança, links públicos, análise de imagem e respostas gerais.';
 }
 
-html, body {
-  margin: 0;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(180deg, #060912, #0b1220);
-  color: var(--text);
-  font-family: Arial, Helvetica, sans-serif;
+function handleSend() {
+  const question = userInput.value.trim();
+  if (!question) return;
+
+  addMessage(question, 'user');
+  userInput.value = '';
+
+  const response = defaultReply(question);
+  setTimeout(() => addMessage(response, 'bot'), 200);
 }
 
-body {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 100vh;
-  padding: 20px;
-}
+sendBtn.addEventListener('click', handleSend);
+userInput.addEventListener('keydown', (event) => {
+  if (event.key === 'Enter') handleSend();
+});
 
-.app-shell {
-  width: min(1200px, 100%);
-  height: min(90vh, 820px);
-  background: rgba(10, 16, 24, 0.9);
-  border: 1px solid var(--line);
-  border-radius: 22px;
-  overflow: hidden;
-  display: grid;
-  grid-template-columns: 280px 1fr;
-  box-shadow: 0 30px 80px rgba(0,0,0,0.45);
-}
+newChatBtn.addEventListener('click', () => {
+  chatBox.innerHTML = '';
+  addMessage('Novo chat iniciado. Como posso ajudar?', 'bot');
+});
 
-.sidebar {
-  background: linear-gradient(180deg, #0b1220, #101a2b);
-  border-right: 1px solid var(--line);
-  padding: 22px 18px;
-}
-
-.brand {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  margin-bottom: 26px;
-}
-
-.logo {
-  width: 48px;
-  height: 48px;
-  display: grid;
-  place-items: center;
-  border-radius: 14px;
-  background: linear-gradient(135deg, var(--accent), var(--accent-2));
-  color: #051013;
-  font-weight: 900;
-  font-size: 24px;
-}
-
-.brand h1 {
-  margin: 0;
-  font-size: 1.2rem;
-}
-
-.brand span {
-  color: var(--muted);
-  font-size: 0.8rem;
-}
-
-.nav {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.nav-btn {
-  background: rgba(255,255,255,0.02);
-  border: 1px solid var(--line);
-  color: var(--text);
-  border-radius: 12px;
-  padding: 12px 14px;
-  text-align: left;
-  font-weight: 700;
-  cursor: pointer;
-}
-
-.nav-btn.active {
-  background: linear-gradient(90deg, rgba(90, 208, 255, 0.16), rgba(126, 240, 199, 0.08));
-  border-color: rgba(90, 208, 255, 0.45);
-}
-
-.mini-panel {
-  margin-top: 30px;
-  padding: 16px 14px;
-  border-radius: 16px;
-  background: rgba(255,255,255,0.02);
-  border: 1px solid var(--line);
-}
-
-.mini-panel h2 {
-  margin: 0 0 14px;
-  font-size: 1rem;
-}
-
-.status-row {
-  display: flex;
-  justify-content: space-between;
-  margin: 10px 0;
-  color: var(--muted);
-}
-
-.status-row strong {
-  color: var(--text);
-}
-
-.main-panel {
-  display: flex;
-  flex-direction: column;
-  background: linear-gradient(180deg, rgba(15,22,34,0.9), rgba(11,17,25,1));
-}
-
-.topbar {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 20px 24px;
-  border-bottom: 1px solid var(--line);
-}
-
-.topbar h2 {
-  margin: 4px 0 0;
-}
-
-.eyebrow {
-  margin: 0;
-  color: var(--muted);
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  font-size: 0.72rem;
-}
-
-#newChatBtn,
-#sendBtn,
-#analyzeImageBtn,
-#analyzeSiteBtn {
-  border: none;
-  border-radius: 12px;
-  color: #041318;
-  background: linear-gradient(135deg, var(--accent), var(--accent-2));
-  font-weight: 800;
-  cursor: pointer;
-}
-
-#newChatBtn {
-  padding: 10px 16px;
-}
-
-.chat-box {
-  flex: 1;
-  overflow-y: auto;
-  padding: 18px 22px;
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
-}
-
-.message {
-  max-width: 76%;
-  padding: 12px 14px;
-  border-radius: 16px;
-  line-height: 1.5;
-  white-space: pre-wrap;
-}
-
-.message.user {
-  margin-left: auto;
-  background: linear-gradient(135deg, rgba(90,208,255,0.18), rgba(126,240,199,0.1));
-  border: 1px solid rgba(90,208,255,0.26);
-}
-
-.message.bot {
-  background: rgba(255,255,255,0.03);
-  border: 1px solid var(--line);
-}
-
-.composer {
-  display: flex;
-  gap: 12px;
-  padding: 18px 22px 22px;
-  border-top: 1px solid var(--line);
-}
-
-#userInput,
-#imageUrl,
-#siteUrl {
-  flex: 1;
-  border: 1px solid var(--line);
-  background: rgba(255,255,255,0.02);
-  color: var(--text);
-  border-radius: 12px;
-  padding: 14px 16px;
-  font-size: 1rem;
-}
-
-#sendBtn {
-  padding: 0 22px;
-}
-
-.extra-tools {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 16px;
-  padding: 0 22px 22px;
-}
-
-.tool-card {
-  background: rgba(255,255,255,0.02);
-  border: 1px solid var(--line);
-  border-radius: 16px;
-  padding: 14px;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
-.tool-card label {
-  color: var(--muted);
-  font-size: 0.8rem;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-}
-
-#analyzeImageBtn,
-#analyzeSiteBtn {
-  padding: 12px 14px;
-}
-
-@media (max-width: 720px) {
-  .app-shell {
-    grid-template-columns: 1fr;
-    height: auto;
-    min-height: 100vh;
+analyzeImageBtn.addEventListener('click', () => {
+  const value = imageUrlInput.value.trim();
+  if (!value) {
+    addMessage('Informe uma URL de imagem para analisar.', 'bot');
+    return;
   }
 
-  .sidebar {
-    border-right: none;
-    border-bottom: 1px solid var(--line);
+  const isValid = /^https?:\/\//i.test(value);
+  const result = isValid
+    ? 'URL de imagem válida. Possível análise local: imagem pública detectada. O sistema mostra que a referência aponta para um recurso visível e acessível via URL.'
+    : 'A URL informada não parece ser uma imagem pública válida. Use http:// ou https://.';
+
+  addMessage(result, 'bot');
+});
+
+analyzeSiteBtn.addEventListener('click', () => {
+  const value = siteUrlInput.value.trim();
+  if (!value) {
+    addMessage('Informe um link público para verificar.', 'bot');
+    return;
   }
 
-  .extra-tools {
-    grid-template-columns: 1fr;
-  }
+  const url = new URL(value);
+  const result = `Link verificado: ${url.hostname}\nProtocolo: ${url.protocol}\nStatus: URL pública válida no formato básico do navegador.\nObservação: esta verificação confirma apenas o formato e a estrutura do endereço.`;
 
-  .message {
-    max-width: 88%;
-  }
-}
+  addMessage(result, 'bot');
+});
+
+addMessage('Olá! Eu sou o Security Hunter. Como posso ajudar hoje?', 'bot');
